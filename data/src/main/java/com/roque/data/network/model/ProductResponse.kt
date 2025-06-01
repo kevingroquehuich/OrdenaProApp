@@ -10,9 +10,11 @@ class ProductResponse(
     @SerializedName("price") val price: Double,
     @SerializedName("thumbnail") val thumbnail: String,
     @SerializedName("category") val category: String,
-    @SerializedName("discountPercentage") val discountPercentage: Double
+    @SerializedName("discountPercentage") val discountPercentage: Double,
+    @SerializedName("rating") val rating: Double,
+    @SerializedName("stock") val stock: Int
 ) {
 
-    fun toDomain() = Product(id, title, description, price, thumbnail, category, discountPercentage)
+    fun toDomain() = Product(id, title, description, price, thumbnail, category, discountPercentage, rating, stock)
 
 }

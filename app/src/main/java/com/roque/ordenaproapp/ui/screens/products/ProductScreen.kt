@@ -14,9 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -35,20 +32,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.roque.domain.util.Result
 import com.roque.ordenaproapp.R
 import com.roque.ordenaproapp.ui.composables.CustomFilterChip
 import com.roque.ordenaproapp.ui.composables.ProductCard
 import com.roque.ordenaproapp.ui.composables.RoundedImage
 import com.roque.ordenaproapp.ui.composables.SearchBar
-import java.util.Locale
 
 @Composable
-fun ProductScreen(modifier: Modifier, viewModel: ProductViewModel = hiltViewModel()) {
+fun ProductScreen(
+    productViewModel: ProductViewModel,
+    navigateToDetail: (Int) -> Unit
+) {
 
-    val result by viewModel.products.collectAsState()
-    val categories by viewModel.categories.collectAsState()
+    val result by productViewModel.products.collectAsState()
+    val categories by productViewModel.categories.collectAsState()
 
     var query by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf<String?>(null) }
@@ -70,7 +68,7 @@ fun ProductScreen(modifier: Modifier, viewModel: ProductViewModel = hiltViewMode
                         modifier = Modifier.padding(top = 16.dp)
                     )
                     Text(
-                        text = "Ordena tu comida favorita!",
+                        text = "Ordena tus productos favoritos!",
                         fontWeight = FontWeight.SemiBold,
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding(top = 8.dp)
@@ -86,9 +84,9 @@ fun ProductScreen(modifier: Modifier, viewModel: ProductViewModel = hiltViewMode
                 query = query,
                 onQueryChange = {
                     query = it
-                    viewModel.searchProducts(query, selectedCategory)
+                    productViewModel.searchProducts(query, selectedCategory)
                 },
-                onFilterClick = { /* Filtros */ }
+                onShoppingCartClick = {}
             )
         }
 
@@ -105,7 +103,7 @@ fun ProductScreen(modifier: Modifier, viewModel: ProductViewModel = hiltViewMode
                                 onClick = {
                                     selectedCategory =
                                         if (selectedCategory == category.slug) null else category.slug
-                                    viewModel.searchProducts(query, selectedCategory)
+                                    productViewModel.searchProducts(query, selectedCategory)
                                 }
                             )
                         }
@@ -116,7 +114,6 @@ fun ProductScreen(modifier: Modifier, viewModel: ProductViewModel = hiltViewMode
             }
         }
 
-        // Grid de productos
         item {
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -130,7 +127,9 @@ fun ProductScreen(modifier: Modifier, viewModel: ProductViewModel = hiltViewMode
                         horizontalSpacing = 8.dp,
                         verticalSpacing = 8.dp
                     ) { product ->
-                        ProductCard(product)
+                        ProductCard(product = product) {
+                            navigateToDetail(product.id)
+                        }
                     }
                 }
 

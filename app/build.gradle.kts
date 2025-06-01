@@ -6,6 +6,7 @@ plugins {
     //alias(libs.plugins.google.services)
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.kotlin.serializable)
 
 }
 
@@ -57,6 +58,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
 
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.ksp)

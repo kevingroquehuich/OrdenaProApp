@@ -13,8 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -32,12 +32,12 @@ import androidx.compose.ui.unit.dp
 fun SearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
-    onFilterClick: () -> Unit
+    onShoppingCartClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Search box
@@ -82,5 +82,21 @@ fun SearchBar(
             }
         }
 
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color(0xFFFF3B30))
+                .clickable { onShoppingCartClick() },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.ShoppingCart,
+                contentDescription = "ShoppingCart",
+                tint = Color.White
+            )
+        }
     }
 }

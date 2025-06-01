@@ -1,6 +1,5 @@
 package com.roque.ordenaproapp.ui.composables
 
-import android.text.TextUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,16 +10,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,15 +33,15 @@ import kotlin.math.roundToInt
 
 @Composable
 fun ProductCard(
-    product: Product
+    product: Product,
+    onClick: (Int) -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        modifier = Modifier
-            .width(180.dp)
-            .padding(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        onClick = { onClick(product.id) }
     ) {
         Column(
             modifier = Modifier
@@ -64,7 +59,6 @@ fun ProductCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Título y subtítulo
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 text = product.title,
@@ -77,7 +71,6 @@ fun ProductCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Fila de rating y favorito
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
