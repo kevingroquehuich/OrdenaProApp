@@ -63,6 +63,8 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
 
     implementation(libs.lottie)
+    implementation(libs.coil.kt)
+    implementation(libs.coil.network)
 
     implementation(libs.androidx.navigation.compose)
 

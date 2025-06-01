@@ -11,7 +11,7 @@ interface ProductApi {
 
     @GET("products")
     suspend fun getAllProducts(
-        @Query("limit") limit: Int = 100,
+        @Query("limit") limit: Int = 194,
         @Query("skip") skip: Int = 0
     ): Response<BaseResponse<List<ProductResponse>>>
 

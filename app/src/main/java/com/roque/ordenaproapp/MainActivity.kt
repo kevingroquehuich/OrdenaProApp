@@ -22,10 +22,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             OrdenaProAppTheme {
-                ProductScreen()
-                /*Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
-                } */
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    ProductScreen(Modifier.padding(innerPadding))
+                }
             }
         }
     }
