@@ -20,14 +20,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.roque.domain.util.Result
+import java.util.Locale
 
 @Composable
 fun ProductScreen(viewModel: ProductViewModel = hiltViewModel()) {
 
     val result by viewModel.products.collectAsState()
+    val categories by viewModel.categories.collectAsState()
+
     var query by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf<String?>(null) }
 
@@ -44,17 +48,30 @@ fun ProductScreen(viewModel: ProductViewModel = hiltViewModel()) {
 
         // Ejemplo de filtro de categorías fijas
         Row(Modifier.horizontalScroll(rememberScrollState())) {
-            listOf("smartphones", "laptops", "fragrances").forEach { category ->
-                FilterChip(
-                    selected = selectedCategory == category,
-                    onClick = {
-                        selectedCategory = if (selectedCategory == category) null else category
-                        viewModel.searchProducts(query, selectedCategory)
-                    },
-                    label = { Text(category) },
-                    modifier = Modifier.padding(4.dp)
-                )
+
+            when (val state = categories) {
+                is Result.Success -> {
+                    state.data.forEach { category ->
+                        FilterChip(
+                            selected = selectedCategory == category.slug,
+                            onClick = {
+                                selectedCategory = if (selectedCategory ==  category.slug) null else  category.slug
+                                viewModel.searchProducts(query, selectedCategory)
+                            },
+                            label = {
+                                Text(category.name.replaceFirstChar {
+                                    if (it.isLowerCase()) it.titlecase(
+                                        Locale.getDefault()
+                                    ) else it.toString()
+                                }) },
+                            modifier = Modifier.padding(4.dp)
+                        )
+                    }
+                }
+
+                is Result.Error -> Text("Error al obtener categorias")
             }
+
         }
 
         when (val state = result) {

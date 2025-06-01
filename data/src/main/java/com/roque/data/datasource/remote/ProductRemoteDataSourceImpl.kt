@@ -1,8 +1,8 @@
 package com.roque.data.datasource.remote
 
-import android.util.Log
 import com.roque.data.network.api.ProductApi
 import com.roque.domain.datasource.remote.ProductRemoteDataSource
+import com.roque.domain.model.Category
 import com.roque.domain.model.Product
 import com.roque.domain.util.Failure
 import com.roque.domain.util.Result
@@ -49,4 +49,17 @@ class ProductRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun getCategories(): Result<List<Category>> {
+        return try {
+            val response = api.getCategories()
+            if (response.isSuccessful) {
+                val categories = response.body()?.map { it.toDomain() }?.sortedBy { it.name }.orEmpty()
+                Result.Success(categories)
+            } else {
+                Result.Error(Failure.ServerError)
+            }
+        } catch (e: Exception) {
+            Result.Error(Failure.NetworkError)
+        }
+    }
 }
