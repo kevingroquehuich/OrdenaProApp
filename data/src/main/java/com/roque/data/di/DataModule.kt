@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.google.firebase.firestore.FirebaseFirestore
 import com.roque.data.datasource.local.CartLocalDataSource
 import com.roque.data.datasource.local.dao.CartDao
+import com.roque.data.datasource.local.dao.OrderDao
 import com.roque.data.datasource.local.db.OrderProDatabase
 import com.roque.data.datasource.remote.ProductRemoteDataSource
 import com.roque.data.repository.CartRepositoryImpl
@@ -32,6 +33,9 @@ object DataModule {
 
     @Provides
     fun provideCartDao(db: OrderProDatabase): CartDao = db.cartDao()
+
+    @Provides
+    fun provideOrderDao(db: OrderProDatabase): OrderDao = db.orderDao()
 
 
     @Provides

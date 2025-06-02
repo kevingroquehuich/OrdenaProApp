@@ -9,9 +9,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.roque.ordenaproapp" />
-                  <option name="mobileSdkAppId" value="1:141737952543:android:ae6fba1a7f63a9761b9c2a" />
-                  <option name="projectId" value="kroquedevprojects" />
-                  <option name="projectNumber" value="141737952543" />
+                  <option name="mobileSdkAppId" value="1:293694774419:android:e8d6fbe5ac95605791c166" />
+                  <option name="projectId" value="kroquedevprojects-226f3" />
+                  <option name="projectNumber" value="293694774419" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

@@ -9,6 +9,7 @@ import androidx.navigation.toRoute
 import com.roque.ordenaproapp.ui.screens.cart.CartScreen
 import com.roque.ordenaproapp.ui.screens.cart.CartViewModel
 import com.roque.ordenaproapp.ui.screens.orders.OrderSummaryScreen
+import com.roque.ordenaproapp.ui.screens.orders.OrderViewModel
 import com.roque.ordenaproapp.ui.screens.products.ProductScreen
 import com.roque.ordenaproapp.ui.screens.products.ProductViewModel
 import com.roque.ordenaproapp.ui.screens.products.detail.ProductDetailScreen
@@ -55,11 +56,18 @@ fun NavigationWrapper() {
         }
 
         composable<OrderSummary> {
+            val orderViewModel: OrderViewModel = hiltViewModel()
             OrderSummaryScreen(
+                orderViewModel = orderViewModel,
                 selectedPayment = "credit",
                 onSelectPayment = {},
-                saveCard = false,
-                onSaveCardToggle = {}
+                saveCard = true,
+                onSaveCardToggle = {},
+                customerName = "Keving Hanz Roque Huich",
+                onBack = { navController.popBackStack() },
+                onNavigateToHome = { navController.navigate(Products) {
+                    popUpTo<Products>{ inclusive = true }
+                } }
             )
         }
 

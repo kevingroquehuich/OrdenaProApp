@@ -21,13 +21,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,96 +48,157 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.roque.ordenaproapp.R
 import com.roque.ordenaproapp.ui.composables.CheckoutBar
+import com.roque.ordenaproapp.ui.composables.OrderSuccessDialog
 
 
 @Composable
 fun OrderSummaryScreen(
+    orderViewModel: OrderViewModel,
     selectedPayment: String,
     onSelectPayment: (String) -> Unit,
     saveCard: Boolean,
-    onSaveCardToggle: (Boolean) -> Unit
+    onSaveCardToggle: (Boolean) -> Unit,
+    customerName: String,
+    onBack: () -> Unit,
+    onNavigateToHome: () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .weight(1f)
-        ) {
-            Spacer(Modifier.height(16.dp))
+    val uiState by orderViewModel.uiState.collectAsState()
+    val pricing by orderViewModel.pricing.collectAsState()
 
-            Icon(
-                Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
-                modifier = Modifier.clickable { }
-            )
+    val snackbarHostState = remember { SnackbarHostState() }
 
-            Spacer(Modifier.height(32.dp))
+    LaunchedEffect(Unit) {
+        orderViewModel.getCartItems()
+    }
 
-            OrderSummarySection()
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
 
-            Spacer(Modifier.height(40.dp))
+        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
 
-            Text(
-                text = "Payment methods",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .weight(1f)
+            ) {
+                Spacer(Modifier.height(16.dp))
 
-            Spacer(Modifier.height(16.dp))
-
-            PaymentMethodCard(
-                brandLogo = R.drawable.ic_mastercard_logo,
-                title = "Credit card",
-                cardNumber = "5105 **** **** 0505",
-                selected = selectedPayment == "credit",
-                onClick = { onSelectPayment("credit") },
-                backgroundColor = Color(0xFF3C2E25),
-                contentColor = Color.White
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            PaymentMethodCard(
-                brandLogo = R.drawable.ic_visa_logo,
-                title = "Debit card",
-                cardNumber = "3566 **** **** 0505",
-                selected = selectedPayment == "debit",
-                onClick = { onSelectPayment("debit") },
-                backgroundColor = Color(0xFFF5F5F5),
-                contentColor = Color.Black
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    checked = saveCard,
-                    onCheckedChange = onSaveCardToggle,
-                    colors = CheckboxDefaults.colors(checkedColor = Color.Red)
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    modifier = Modifier.clickable { onBack() }
                 )
-                Text("Save card details for future payments")
+
+                Spacer(Modifier.height(32.dp))
+
+                OrderSummarySection(
+                    subtotal = pricing.subtotal,
+                    taxes = pricing.taxes,
+                    deliveryFee = pricing.deliveryFee,
+                    total = pricing.total
+                )
+
+                Spacer(Modifier.height(40.dp))
+
+                Text(
+                    text = "Payment methods",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                PaymentMethodCard(
+                    brandLogo = R.drawable.ic_mastercard_logo,
+                    title = "Credit card",
+                    cardNumber = "5105 **** **** 0505",
+                    selected = selectedPayment == "credit",
+                    onClick = { onSelectPayment("credit") },
+                    backgroundColor = Color(0xFF3C2E25),
+                    contentColor = Color.White
+                )
+
+                Spacer(Modifier.height(12.dp))
+
+                PaymentMethodCard(
+                    brandLogo = R.drawable.ic_visa_logo,
+                    title = "Debit card",
+                    cardNumber = "3566 **** **** 0505",
+                    selected = selectedPayment == "debit",
+                    onClick = { onSelectPayment("debit") },
+                    backgroundColor = Color(0xFFF5F5F5),
+                    contentColor = Color.Black
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = saveCard,
+                        onCheckedChange = onSaveCardToggle,
+                        colors = CheckboxDefaults.colors(checkedColor = Color.Red)
+                    )
+                    Text("Guardar los datos de la tarjeta para futuros pagos?")
+                }
             }
+
+            Spacer(Modifier.height(16.dp))
+
+            CheckoutBar(
+                totalPrice = pricing.total,
+                textButton = "Confirmar Pedido",
+                colorButton = 0xFF3C2E25,
+                onPayClick = {
+                    orderViewModel.confirmOrder(customerName)
+                }
+            )
         }
 
-        Spacer(Modifier.height(16.dp))
+        when (val state = uiState) {
+            is OrderUiState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(60.dp),
+                    strokeWidth = 6.dp,
+                    color = Color(0xFFFF3B30)
+                )
+            }
 
-        CheckoutBar(
-            totalPrice = 100.0,
-            textButton = "Confirmar Pedido",
-            colorButton = 0xFF3C2E25,
-            onPayClick = {  }
-        )
+            is OrderUiState.Success -> {
+                OrderSuccessDialog(
+                    onDismiss = {
+                        orderViewModel.resetState()
+                        onNavigateToHome()
+                    }
+                )
+            }
+
+            is OrderUiState.Error -> {
+                LaunchedEffect(state.message) {
+                    snackbarHostState.showSnackbar(state.message)
+                    orderViewModel.resetState()
+                }
+            }
+
+            else -> Unit
+        }
     }
+
 }
 
 
 @Composable
-fun OrderSummarySection() {
+fun OrderSummarySection(
+    subtotal: Double,
+    taxes: Double,
+    deliveryFee: Double,
+    total: Double
+) {
     Text(
-        text = "Order summary",
+        text = "Resumen del pedido",
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp
@@ -135,22 +206,22 @@ fun OrderSummarySection() {
 
     Spacer(Modifier.height(8.dp))
 
-    SummaryRow(label = "Order", amount = "$16.48")
-    SummaryRow(label = "Taxes", amount = "$0.3")
-    SummaryRow(label = "Delivery fees", amount = "$1.5")
+    SummaryRow(label = "Subtotal", amount = "S/. ${"%.2f".format(subtotal)}")
+    SummaryRow(label = "Impuestos", amount = "S/. ${"%.2f".format(taxes)}")
+    SummaryRow(label = "Tarifa de entrea", amount = "S/. ${"%.2f".format(deliveryFee)}")
 
     Divider(modifier = Modifier.padding(vertical = 12.dp))
 
-    SummaryRow(label = "Total:", amount = "$18.19", isTotal = true)
+    SummaryRow(label = "Total:", amount = "S/. ${"%.2f".format(total)}", isTotal = true)
 
     Spacer(Modifier.height(4.dp))
 
     Text(
-        text = "Estimated delivery time: 15 - 30mins",
+        text = "Tiempo estimado de entrega: 15 - 30mins",
         style = MaterialTheme.typography.bodySmall,
         color = Color.Gray,
         fontSize = 14.sp,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.SemiBold,
         modifier = Modifier.padding(16.dp)
     )
 }
@@ -158,7 +229,9 @@ fun OrderSummarySection() {
 @Composable
 fun SummaryRow(label: String, amount: String, isTotal: Boolean = false) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
