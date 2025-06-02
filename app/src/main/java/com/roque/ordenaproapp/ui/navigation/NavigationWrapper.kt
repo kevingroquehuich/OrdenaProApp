@@ -8,10 +8,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.roque.ordenaproapp.ui.screens.cart.CartScreen
 import com.roque.ordenaproapp.ui.screens.cart.CartViewModel
-import com.roque.ordenaproapp.ui.screens.orders.OrderSummaryScreen
-import com.roque.ordenaproapp.ui.screens.orders.OrderViewModel
-import com.roque.ordenaproapp.ui.screens.products.ProductScreen
-import com.roque.ordenaproapp.ui.screens.products.ProductViewModel
+import com.roque.ordenaproapp.ui.screens.orders.list.OrderListScreen
+import com.roque.ordenaproapp.ui.screens.orders.list.OrderListViewModel
+import com.roque.ordenaproapp.ui.screens.orders.summary.OrderSummaryScreen
+import com.roque.ordenaproapp.ui.screens.orders.summary.OrderSummaryViewModel
+import com.roque.ordenaproapp.ui.screens.products.list.ProductScreen
+import com.roque.ordenaproapp.ui.screens.products.list.ProductViewModel
 import com.roque.ordenaproapp.ui.screens.products.detail.ProductDetailScreen
 import com.roque.ordenaproapp.ui.screens.products.detail.ProductsDetailViewModel
 
@@ -30,7 +32,8 @@ fun NavigationWrapper() {
                 navigateToDetail = { id ->
                     navController.navigate(ProductDetail(id))
                 },
-                navigateToCart = { navController.navigate(Cart) }
+                navigateToCart = { navController.navigate(Cart) },
+                navigateToOrders = { navController.navigate(OrderList) }
             )
         }
 
@@ -56,9 +59,9 @@ fun NavigationWrapper() {
         }
 
         composable<OrderSummary> {
-            val orderViewModel: OrderViewModel = hiltViewModel()
+            val orderSummaryViewModel: OrderSummaryViewModel = hiltViewModel()
             OrderSummaryScreen(
-                orderViewModel = orderViewModel,
+                orderSummaryViewModel = orderSummaryViewModel,
                 selectedPayment = "credit",
                 onSelectPayment = {},
                 saveCard = true,
@@ -69,6 +72,11 @@ fun NavigationWrapper() {
                     popUpTo<Products>{ inclusive = true }
                 } }
             )
+        }
+
+        composable<OrderList> {
+            val orderListViewModel: OrderListViewModel = hiltViewModel()
+            OrderListScreen(orderListViewModel = orderListViewModel)
         }
 
     }

@@ -1,4 +1,4 @@
-package com.roque.ordenaproapp.ui.screens.orders
+package com.roque.ordenaproapp.ui.screens.orders.summary
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
@@ -35,9 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,7 +51,7 @@ import com.roque.ordenaproapp.ui.composables.OrderSuccessDialog
 
 @Composable
 fun OrderSummaryScreen(
-    orderViewModel: OrderViewModel,
+    orderSummaryViewModel: OrderSummaryViewModel,
     selectedPayment: String,
     onSelectPayment: (String) -> Unit,
     saveCard: Boolean,
@@ -63,13 +61,13 @@ fun OrderSummaryScreen(
     onNavigateToHome: () -> Unit
 ) {
 
-    val uiState by orderViewModel.uiState.collectAsState()
-    val pricing by orderViewModel.pricing.collectAsState()
+    val uiState by orderSummaryViewModel.uiState.collectAsState()
+    val pricing by orderSummaryViewModel.pricing.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
-        orderViewModel.getCartItems()
+        orderSummaryViewModel.getCartItems()
     }
 
     Scaffold(
@@ -153,13 +151,13 @@ fun OrderSummaryScreen(
                 textButton = "Confirmar Pedido",
                 colorButton = 0xFF3C2E25,
                 onPayClick = {
-                    orderViewModel.confirmOrder(customerName)
+                    orderSummaryViewModel.confirmOrder(customerName)
                 }
             )
         }
 
         when (val state = uiState) {
-            is OrderUiState.Loading -> {
+            is OrderSummaryUiState.Loading -> {
                 CircularProgressIndicator(
                     modifier = Modifier.size(60.dp),
                     strokeWidth = 6.dp,
@@ -167,19 +165,19 @@ fun OrderSummaryScreen(
                 )
             }
 
-            is OrderUiState.Success -> {
+            is OrderSummaryUiState.Success -> {
                 OrderSuccessDialog(
                     onDismiss = {
-                        orderViewModel.resetState()
+                        orderSummaryViewModel.resetState()
                         onNavigateToHome()
                     }
                 )
             }
 
-            is OrderUiState.Error -> {
+            is OrderSummaryUiState.Error -> {
                 LaunchedEffect(state.message) {
                     snackbarHostState.showSnackbar(state.message)
-                    orderViewModel.resetState()
+                    orderSummaryViewModel.resetState()
                 }
             }
 

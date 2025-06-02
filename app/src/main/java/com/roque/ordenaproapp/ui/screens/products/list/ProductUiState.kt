@@ -1,4 +1,4 @@
-package com.roque.ordenaproapp.ui.screens.products
+package com.roque.ordenaproapp.ui.screens.products.list
 
 import com.roque.domain.model.Category
 import com.roque.domain.model.Product

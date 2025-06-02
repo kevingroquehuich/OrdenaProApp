@@ -1,4 +1,4 @@
-package com.roque.ordenaproapp.ui.screens.products
+package com.roque.ordenaproapp.ui.screens.products.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

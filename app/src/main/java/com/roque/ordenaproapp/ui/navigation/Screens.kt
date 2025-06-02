@@ -13,3 +13,6 @@ object Cart
 
 @Serializable
 object OrderSummary
+
+@Serializable
+object OrderList

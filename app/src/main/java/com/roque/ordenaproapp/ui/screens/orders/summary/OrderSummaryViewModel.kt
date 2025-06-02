@@ -1,4 +1,4 @@
-package com.roque.ordenaproapp.ui.screens.orders
+package com.roque.ordenaproapp.ui.screens.orders.summary
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,14 +17,14 @@ import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
-class OrderViewModel @Inject constructor(
+class OrderSummaryViewModel @Inject constructor(
     private val saveOrderUseCase: SaveOrderUseCase,
     private val getCartItemsUseCase: GetCartUseCase,
     private val clearCartUseCase: ClearCartUseCase
 ): ViewModel() {
 
-    private val _uiState = MutableStateFlow<OrderUiState>(OrderUiState.Idle)
-    val uiState: StateFlow<OrderUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<OrderSummaryUiState>(OrderSummaryUiState.Idle)
+    val uiState: StateFlow<OrderSummaryUiState> = _uiState.asStateFlow()
 
     private val _pricing = MutableStateFlow(OrderPricing())
     val pricing: StateFlow<OrderPricing> = _pricing
@@ -51,11 +51,11 @@ class OrderViewModel @Inject constructor(
 
     fun confirmOrder(customerName: String) {
         viewModelScope.launch {
-            _uiState.value = OrderUiState.Loading
+            _uiState.value = OrderSummaryUiState.Loading
 
             try {
                 if (currentCartItems.isEmpty()) {
-                    _uiState.value = OrderUiState.Error("El carrito está vacío")
+                    _uiState.value = OrderSummaryUiState.Error("El carrito está vacío")
                     return@launch
                 }
 
@@ -75,15 +75,16 @@ class OrderViewModel @Inject constructor(
 
                 saveOrderUseCase(order)
                 clearCartUseCase()
-                _uiState.value = OrderUiState.Success(orderId)
+                _uiState.value = OrderSummaryUiState.Success(orderId)
 
             } catch (e: Exception) {
-                _uiState.value = OrderUiState.Error("Error al guardar el pedido: ${e.message}")
+                _uiState.value =
+                    OrderSummaryUiState.Error("Error al guardar el pedido: ${e.message}")
             }
         }
     }
 
     fun resetState() {
-        _uiState.value = OrderUiState.Idle
+        _uiState.value = OrderSummaryUiState.Idle
     }
 }

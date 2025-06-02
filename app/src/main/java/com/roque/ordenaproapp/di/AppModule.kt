@@ -7,6 +7,7 @@ import com.roque.domain.usecase.cart.AddToCartUseCase
 import com.roque.domain.usecase.cart.ClearCartUseCase
 import com.roque.domain.usecase.cart.GetCartUseCase
 import com.roque.domain.usecase.cart.RemoveFromCartUseCase
+import com.roque.domain.usecase.order.GetOrdersUseCase
 import com.roque.domain.usecase.order.SaveOrderUseCase
 import com.roque.domain.usecase.product.GetCategoriesUseCase
 import com.roque.domain.usecase.product.GetProductByIdUseCase
@@ -63,5 +64,9 @@ object AppModule  {
     @Singleton
     @Provides
     fun provideSaveOrderUseCase(orderRepository: OrderRepository): SaveOrderUseCase = SaveOrderUseCase(orderRepository)
+
+    @Singleton
+    @Provides
+    fun provideGetOrdersUseCase(orderRepository: OrderRepository): GetOrdersUseCase = GetOrdersUseCase(orderRepository)
 
 }

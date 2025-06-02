@@ -1,6 +1,5 @@
-package com.roque.ordenaproapp.ui.screens.products
+package com.roque.ordenaproapp.ui.screens.products.list
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -25,12 +24,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
+import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -50,7 +52,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.roque.domain.model.Product
 import com.roque.ordenaproapp.R
 import com.roque.ordenaproapp.ui.composables.CustomFilterChip
 import com.roque.ordenaproapp.ui.composables.ProductCard
@@ -64,7 +65,8 @@ fun ProductScreen(
     productViewModel: ProductViewModel,
     cartViewModel: CartViewModel,
     navigateToDetail: (String) -> Unit,
-    navigateToCart: () -> Unit
+    navigateToCart: () -> Unit,
+    navigateToOrders: () -> Unit
 ) {
 
     val state by productViewModel.uiState.collectAsState()
@@ -147,7 +149,7 @@ fun ProductScreen(
                         )
                     }
 
-                    RoundedImage(url = "https://t4.ftcdn.net/jpg/03/76/47/81/360_F_376478182_yPuPo2qi6rYcu9ilwGWR6gQ7QBBC8Isw.jpg")
+                   RoundedImage(url = "https://static.vecteezy.com/system/resources/previews/026/408/485/non_2x/man-lifestyle-portrait-hipster-serious-t-shirt-isolated-person-white-background-american-smile-confident-fashion-photo.jpg")
                 }
             }
 
@@ -181,7 +183,8 @@ fun ProductScreen(
                         onQueryChange = {
                             searchQuery = it
                             productViewModel.searchProducts(searchQuery, selectedCategory)
-                        }
+                        },
+                        navigateToOrders = { navigateToOrders() }
                     )
                 }
 
