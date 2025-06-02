@@ -25,7 +25,6 @@ firebaseBom = "33.14.0"
 room = "2.7.1"
 googleServices = "4.4.2"
 coil = "3.2.0"
-material3 = "1.3.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

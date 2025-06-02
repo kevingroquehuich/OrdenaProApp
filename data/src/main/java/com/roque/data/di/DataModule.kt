@@ -1,8 +1,7 @@
 package com.roque.data.di
 
+import com.google.firebase.firestore.FirebaseFirestore
 import com.roque.data.datasource.remote.ProductRemoteDataSourceImpl
-import com.roque.data.network.api.ProductApi
-import com.roque.domain.datasource.remote.ProductRemoteDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,9 +12,13 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DataModule {
 
+    @Provides
+    @Singleton
+    fun provideFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
+
     @Singleton
     @Provides
     fun provideProductsRemoteDataSourceImpl(
-        productsApi: ProductApi
-    ): ProductRemoteDataSourceImpl = ProductRemoteDataSourceImpl(productsApi)
+        firestore: FirebaseFirestore
+    ): ProductRemoteDataSourceImpl = ProductRemoteDataSourceImpl(firestore)
 }

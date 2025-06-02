@@ -1,13 +1,14 @@
 package com.roque.domain.datasource.remote
 
-import com.roque.domain.model.Category
 import com.roque.domain.model.Product
-import com.roque.domain.util.Result
+import kotlinx.coroutines.flow.Flow
 
 interface ProductRemoteDataSource {
-    suspend fun fetchProducts(): Result<List<Product>>
 
-    suspend fun searchProducts(query: String, category: String?): Result<List<Product>>
+    fun getAllProducts(): Flow<List<Product>>
 
-    suspend fun getCategories(): Result<List<Category>>
+    fun getProductById(id: String): Flow<Product?>
+
+    fun searchProducts(query: String, category: String?): Flow<List<Product>>
+
 }

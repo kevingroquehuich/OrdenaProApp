@@ -1,7 +1,7 @@
 package com.roque.domain.model
 
 data class Product(
-    val id: Int,
+    val id: String,
     val title: String,
     val description: String,
     val price: Double,

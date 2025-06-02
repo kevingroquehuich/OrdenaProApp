@@ -2,6 +2,7 @@ package com.roque.ordenaproapp.di
 
 import com.roque.domain.repository.ProductRepository
 import com.roque.domain.usecase.product.GetCategoriesUseCase
+import com.roque.domain.usecase.product.GetProductByIdUseCase
 import com.roque.domain.usecase.product.GetProductsUseCase
 import com.roque.domain.usecase.product.SearchProductsUseCase
 import dagger.Module
@@ -17,6 +18,10 @@ object AppModule  {
     @Singleton
     @Provides
     fun provideGetProductsUseCase(productsRepository: ProductRepository): GetProductsUseCase = GetProductsUseCase(productsRepository)
+
+    @Singleton
+    @Provides
+    fun provideGetProductByIdUseCase(productsRepository: ProductRepository): GetProductByIdUseCase = GetProductByIdUseCase(productsRepository)
 
     @Singleton
     @Provides

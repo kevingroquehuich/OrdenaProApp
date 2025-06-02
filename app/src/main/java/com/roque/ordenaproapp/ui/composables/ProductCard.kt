@@ -34,7 +34,7 @@ import kotlin.math.roundToInt
 @Composable
 fun ProductCard(
     product: Product,
-    onClick: (Int) -> Unit
+    onClick: (String) -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),

@@ -3,13 +3,16 @@ package com.roque.domain.repository
 import com.roque.domain.model.Category
 import com.roque.domain.model.Product
 import com.roque.domain.util.Result
+import kotlinx.coroutines.flow.Flow
 
 interface ProductRepository {
 
-    suspend fun getProducts(): Result<List<Product>>
+    fun getAllProducts(): Flow<List<Product>>
 
-    suspend fun searchProducts(query: String, category: String?): Result<List<Product>>
+    fun getProductById(id: String): Flow<Product?>
 
-    suspend fun getCategories(): Result<List<Category>>
+    fun searchProducts(query: String, category: String?): Flow<List<Product>>
+
+    fun getCategories(): Flow<List<Category>>
 
 }

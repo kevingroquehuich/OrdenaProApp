@@ -1,6 +1,7 @@
 package com.roque.data.di
 
 import com.roque.data.repository.ProductRepositoryImpl
+import com.roque.domain.datasource.remote.CategoryRemoteDataSource
 import com.roque.domain.datasource.remote.ProductRemoteDataSource
 import dagger.Module
 import dagger.Provides
@@ -15,7 +16,8 @@ object RepositoryModule {
     @Singleton
     @Provides
     fun provideProductsRepositoryImpl(
-        remoteSource: ProductRemoteDataSource
-    ): ProductRepositoryImpl = ProductRepositoryImpl(remoteSource)
+        productRemoteDataSource: ProductRemoteDataSource,
+        categoryRemoteDataSource: CategoryRemoteDataSource
+    ): ProductRepositoryImpl = ProductRepositoryImpl(productRemoteDataSource, categoryRemoteDataSource)
 
 }

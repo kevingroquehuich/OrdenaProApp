@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -58,6 +59,11 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
     implementation(libs.google.gson)
     implementation(libs.logging.interceptor)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.auth.ktx)
 
     implementation(libs.androidx.room)
     implementation(libs.androidx.room.ktx)

@@ -1,35 +1,27 @@
 package com.roque.data.repository
 
+import com.roque.domain.datasource.remote.CategoryRemoteDataSource
 import com.roque.domain.datasource.remote.ProductRemoteDataSource
 import com.roque.domain.model.Category
 import com.roque.domain.model.Product
 import com.roque.domain.repository.ProductRepository
-import com.roque.domain.util.Result
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class ProductRepositoryImpl @Inject constructor(
-    private val remote: ProductRemoteDataSource
-): ProductRepository {
+    private val productRemoteDataSource: ProductRemoteDataSource,
+    private val categoryRemoteDataSource: CategoryRemoteDataSource
+) : ProductRepository {
 
-    override suspend fun getProducts(): Result<List<Product>> {
-        return when (val result = remote.fetchProducts()) {
-            is Result.Success -> Result.Success(result.data)
-            is Result.Error -> Result.Error(result.type)
-        }
-    }
+    override fun getAllProducts(): Flow<List<Product>> =
+        productRemoteDataSource.getAllProducts()
 
-    override suspend fun searchProducts(query: String, category: String?): Result<List<Product>> {
-        return when (val result = remote.searchProducts(query, category)) {
-            is Result.Success -> Result.Success(result.data)
-            is Result.Error -> Result.Error(result.type)
-        }
-    }
+    override fun getProductById(id: String): Flow<Product?> =
+        productRemoteDataSource.getProductById(id)
 
-    override suspend fun getCategories(): Result<List<Category>> {
-        return when (val result = remote.getCategories()) {
-            is Result.Success -> Result.Success(result.data)
-            is Result.Error -> Result.Error(result.type)
-        }
-    }
+    override fun searchProducts(query: String, category: String?): Flow<List<Product>> =
+        productRemoteDataSource.searchProducts(query, category)
 
+    override fun getCategories(): Flow<List<Category>> =
+        categoryRemoteDataSource.getCategories()
 }

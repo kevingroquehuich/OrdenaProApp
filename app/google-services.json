@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "293694774419",
+    "project_id": "kroquedevprojects-226f3",
+    "storage_bucket": "kroquedevprojects-226f3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:293694774419:android:e8d6fbe5ac95605791c166",
+        "android_client_info": {
+          "package_name": "com.roque.ordenaproapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0Yg4j5yuOGrAOy0j1yFIy3Kef_6saFpo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

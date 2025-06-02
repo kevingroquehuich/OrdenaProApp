@@ -3,11 +3,10 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
-    //alias(libs.plugins.google.services)
+    alias(libs.plugins.google.services)
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.serializable)
-
 }
 
 android {
@@ -67,6 +66,11 @@ dependencies {
     implementation(libs.lottie)
     implementation(libs.coil.kt)
     implementation(libs.coil.network)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.auth.ktx)
 
     implementation(libs.androidx.navigation.compose)
 

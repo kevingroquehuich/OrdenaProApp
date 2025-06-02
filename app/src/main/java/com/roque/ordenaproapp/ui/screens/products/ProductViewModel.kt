@@ -1,56 +1,54 @@
 package com.roque.ordenaproapp.ui.screens.products
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.roque.domain.model.Category
-import com.roque.domain.model.Product
 import com.roque.domain.usecase.product.GetCategoriesUseCase
 import com.roque.domain.usecase.product.GetProductsUseCase
 import com.roque.domain.usecase.product.SearchProductsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import javax.inject.Inject
-import com.roque.domain.util.Result
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class ProductViewModel @Inject constructor(
     private val getAllProductsUseCase: GetProductsUseCase,
     private val searchProductsUseCase: SearchProductsUseCase,
-    private val categoriesUseCase: GetCategoriesUseCase
+    private val getCategoriesUseCase: GetCategoriesUseCase
 ) : ViewModel() {
 
-    private val _products = MutableStateFlow<Result<List<Product>>>(Result.Success(emptyList()))
-    val products: StateFlow<Result<List<Product>>> = _products
-
-    private val _categories = MutableStateFlow<Result<List<Category>>>(Result.Success(emptyList()))
-    val categories: StateFlow<Result<List<Category>>> = _categories
-
-    init {
-        loadProducts()
-        loadCategories()
-    }
+    private val _uiState = MutableStateFlow(ProductUiState())
+    val uiState: StateFlow<ProductUiState> = _uiState
 
     fun loadProducts() {
         viewModelScope.launch {
-            val result = getAllProductsUseCase()
-            _products.value = result
+            getAllProductsUseCase()
+                .onStart { _uiState.update { it.copy(isLoading = true) } }
+                .catch { e -> _uiState.update { it.copy(error = e.message, isLoading = false) } }
+                .collect { products -> _uiState.update { it.copy(products = products, isLoading = false) } }
         }
     }
 
     fun loadCategories() {
         viewModelScope.launch {
-            val result = categoriesUseCase()
-            _categories.value = result
+            viewModelScope.launch {
+                getCategoriesUseCase()
+                    .onStart { _uiState.update { it.copy(isLoading = true) }}
+                    .catch { e -> _uiState.update { it.copy(error = e.message, isLoading = false) } }
+                    .collect { categories -> _uiState.update { it.copy(categories = categories, isLoading = false) } }
+            }
         }
     }
 
     fun searchProducts(query: String, category: String? = null) {
         viewModelScope.launch {
-            //_products.value = Result.Loading
-            _products.value = searchProductsUseCase(query, category)
+            searchProductsUseCase(query, category).collect { products ->
+                _uiState.update { it.copy(products = products) }
+            }
         }
     }
 

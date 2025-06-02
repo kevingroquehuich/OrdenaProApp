@@ -1,5 +1,6 @@
 package com.roque.ordenaproapp.ui.screens.products
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
@@ -19,6 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,7 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.roque.domain.util.Result
+import com.roque.domain.model.Product
 import com.roque.ordenaproapp.R
 import com.roque.ordenaproapp.ui.composables.CustomFilterChip
 import com.roque.ordenaproapp.ui.composables.ProductCard
@@ -42,14 +45,18 @@ import com.roque.ordenaproapp.ui.composables.SearchBar
 @Composable
 fun ProductScreen(
     productViewModel: ProductViewModel,
-    navigateToDetail: (Int) -> Unit
+    navigateToDetail: (String) -> Unit
 ) {
 
-    val result by productViewModel.products.collectAsState()
-    val categories by productViewModel.categories.collectAsState()
+    val state by productViewModel.uiState.collectAsState()
 
-    var query by remember { mutableStateOf("") }
+    var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(Unit) {
+        productViewModel.loadProducts()
+        productViewModel.loadCategories()
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -79,68 +86,72 @@ fun ProductScreen(
             }
         }
 
-        item {
-            SearchBar(
-                query = query,
-                onQueryChange = {
-                    query = it
-                    productViewModel.searchProducts(query, selectedCategory)
-                },
-                onShoppingCartClick = {}
-            )
-        }
-
-        item {
-            Row(Modifier.horizontalScroll(rememberScrollState())) {
-                when (val state = categories) {
-                    is Result.Success -> {
-                        state.data.forEach { category ->
-                            CustomFilterChip(
-                                label = category.name.replaceFirstChar {
-                                    if (it.isLowerCase()) it.titlecase() else it.toString()
-                                },
-                                selected = selectedCategory == category.slug,
-                                onClick = {
-                                    selectedCategory =
-                                        if (selectedCategory == category.slug) null else category.slug
-                                    productViewModel.searchProducts(query, selectedCategory)
-                                }
-                            )
-                        }
-                    }
-
-                    is Result.Error -> Text("Error al obtener categorías")
+        if (state.isLoading) {
+            item {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(60.dp),
+                        strokeWidth = 6.dp,
+                        color = Color(0xFFFF3B30)
+                    )
                 }
             }
-        }
+        } else if (state.error != null) {
+            item {
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = state.error!!,
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        } else {
+            item {
+                SearchBar(
+                    query = searchQuery,
+                    onQueryChange = {
+                        searchQuery = it
+                        productViewModel.searchProducts(searchQuery, selectedCategory)
+                    },
+                    onShoppingCartClick = {}
+                )
+            }
 
-        item {
-            Spacer(modifier = Modifier.height(8.dp))
-        }
+            item {
+                Row(Modifier.horizontalScroll(rememberScrollState())) {
 
-        result.let { state ->
-            when (state) {
-                is Result.Success -> {
-                    gridItems(
-                        data = state.data,
-                        columns = 2,
-                        horizontalSpacing = 8.dp,
-                        verticalSpacing = 8.dp
-                    ) { product ->
-                        ProductCard(product = product) {
-                            navigateToDetail(product.id)
-                        }
+                    state.categories.forEach { category ->
+                        CustomFilterChip(
+                            label = category.name.replaceFirstChar {
+                                if (it.isLowerCase()) it.titlecase() else it.toString()
+                            },
+                            selected = selectedCategory == category.name,
+                            onClick = {
+                                selectedCategory =
+                                    if (selectedCategory == category.name) null else category.name
+                                productViewModel.searchProducts(searchQuery, selectedCategory)
+                            }
+                        )
                     }
                 }
+            }
 
-                is Result.Error -> {
-                    item { Text("Error al buscar") }
-                }
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
 
-                else -> {
-                    item {
-                        CircularProgressIndicator(Modifier.padding(16.dp))
-                    }
+            gridItems(
+                data = state.products,
+                columns = 2,
+                horizontalSpacing = 8.dp,
+                verticalSpacing = 8.dp
+            ) { product ->
+                ProductCard(product = product) {
+                    navigateToDetail(product.id)
                 }
             }
         }

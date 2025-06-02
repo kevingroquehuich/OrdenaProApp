@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.roque.ordenaproapp" />
+                  <option name="mobileSdkAppId" value="1:141737952543:android:ae6fba1a7f63a9761b9c2a" />
+                  <option name="projectId" value="kroquedevprojects" />
+                  <option name="projectNumber" value="141737952543" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

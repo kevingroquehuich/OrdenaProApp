@@ -27,7 +27,6 @@ fun NavigationWrapper() {
         composable<ProductDetail> { backStackEntry ->
             val productDetail: ProductDetail = backStackEntry.toRoute()
             val productsDetailViewModel: ProductsDetailViewModel  = hiltViewModel()
-            //val id = backStackEntry.arguments?.getInt("id") ?: 0
             ProductDetailScreen(
                 productsDetailViewModel = productsDetailViewModel,
                 productId = productDetail.id
