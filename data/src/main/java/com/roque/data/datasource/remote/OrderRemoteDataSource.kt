@@ -23,7 +23,7 @@ class OrderRemoteDataSource @Inject constructor(
             val ordersDto = snapshot?.documents
                 ?.mapNotNull { it.toObject(OrderDto::class.java) }
                 ?: emptyList()
-            trySend(ordersDto.map { it.toDomain() })
+            trySend(ordersDto.map { it.toDomain() }.sortedByDescending { it.date })
         }
         awaitClose { listener.remove() }
 
