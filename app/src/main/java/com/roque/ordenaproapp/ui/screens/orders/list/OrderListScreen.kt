@@ -24,14 +24,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.roque.ordenaproapp.ui.composables.OrderItemCard
+import com.roque.ordenaproapp.utils.PdfInvoiceGenerator
 
 @Composable
 fun OrderListScreen(
     orderListViewModel: OrderListViewModel,
 ) {
     val state by orderListViewModel.uiState.collectAsState()
+
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         orderListViewModel.loadOrders()
@@ -75,7 +79,18 @@ fun OrderListScreen(
                 items(state.orders) { order ->
                     OrderItemCard(
                         order = order,
-                        onGenerateInvoice = { }
+                        onGenerateInvoice = {
+                            val file = PdfInvoiceGenerator.generateInvoicePdf(context, it)
+                            PdfInvoiceGenerator.openPdf(context, file)
+                        },
+                        onInvoiceView = {
+                            val file = PdfInvoiceGenerator.generateInvoicePdf(context, it)
+                            PdfInvoiceGenerator.openPdf(context, file)
+                        },
+                        onInvoiceShare = {
+                            val file = PdfInvoiceGenerator.generateInvoicePdf(context, it)
+                            PdfInvoiceGenerator.sharePdf(context, file)
+                        }
                     )
                 }
             }
