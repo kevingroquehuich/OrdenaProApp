@@ -1,7 +1,7 @@
 package com.roque.data.repository
 
-import com.roque.domain.datasource.remote.CategoryRemoteDataSource
-import com.roque.domain.datasource.remote.ProductRemoteDataSource
+import com.roque.data.datasource.remote.CategoryRemoteDataSource
+import com.roque.data.datasource.remote.ProductRemoteDataSource
 import com.roque.domain.model.Category
 import com.roque.domain.model.Product
 import com.roque.domain.repository.ProductRepository

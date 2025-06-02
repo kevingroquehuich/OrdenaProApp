@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 fun SearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
-    onShoppingCartClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -80,23 +79,6 @@ fun SearchBar(
                     singleLine = true
                 )
             }
-        }
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFFFF3B30))
-                .clickable { onShoppingCartClick() },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.ShoppingCart,
-                contentDescription = "ShoppingCart",
-                tint = Color.White
-            )
         }
     }
 }

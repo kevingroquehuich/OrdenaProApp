@@ -77,7 +77,7 @@ fun ProductCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "$ ${product.price}",
+                    text = "S/. ${"%.2f".format(product.price)}",
                     fontSize = 14.sp,
                     color = Color.Black
                 )

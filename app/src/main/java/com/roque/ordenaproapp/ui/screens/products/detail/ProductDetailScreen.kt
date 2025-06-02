@@ -41,11 +41,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.roque.domain.model.CartItem
+import com.roque.ordenaproapp.ui.screens.cart.CartViewModel
 
 @Composable
 fun ProductDetailScreen(
     productsDetailViewModel: ProductsDetailViewModel,
-    productId: String
+    cartViewModel: CartViewModel,
+    productId: String,
+    onBack: () -> Unit
 ) {
 
     var quantity by remember { mutableStateOf(1) }
@@ -90,7 +94,11 @@ fun ProductDetailScreen(
                 ) {
 
                     Spacer(Modifier.height(16.dp))
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        modifier = Modifier.clickable { onBack() }
+                    )
 
                     Spacer(Modifier.height(32.dp))
 
@@ -163,22 +171,31 @@ fun ProductDetailScreen(
                         }
                     }
 
-
                     Spacer(Modifier.width(24.dp))
 
                     Box(
                         modifier = Modifier
                             .weight(2f)
                             .clip(RoundedCornerShape(16.dp))
-                            .background(Color(0xFF3C2E25)) // dark brown
-                            .clickable { }
+                            .background(Color(0xFF3C2E25))
+                            .clickable {
+                                val item = CartItem(
+                                    productId = product.id,
+                                    title = product.title,
+                                    price = product.price,
+                                    thumbnail = product.thumbnail,
+                                    quantity = quantity
+                                )
+                                cartViewModel.addItem(item)
+                                onBack()
+                            }
                             .padding(10.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Row {
                             Text("Agregar", color = Color.White, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.width(24.dp))
-                            Text(text = "$${product.price*quantity}", color = Color.White, fontWeight = FontWeight.Bold)
+                            Text(text = "S/. ${"%.2f".format((product.price*quantity))}", color = Color.White, fontWeight = FontWeight.Bold)
                         }
                     }
                 }

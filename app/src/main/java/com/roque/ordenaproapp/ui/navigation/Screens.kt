@@ -7,3 +7,9 @@ object Products
 
 @Serializable
 data class ProductDetail(val id: String)
+
+@Serializable
+object Cart
+
+@Serializable
+object OrderSummary

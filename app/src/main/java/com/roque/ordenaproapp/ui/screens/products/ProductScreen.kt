@@ -1,6 +1,13 @@
 package com.roque.ordenaproapp.ui.screens.products
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -17,8 +24,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
@@ -41,122 +56,171 @@ import com.roque.ordenaproapp.ui.composables.CustomFilterChip
 import com.roque.ordenaproapp.ui.composables.ProductCard
 import com.roque.ordenaproapp.ui.composables.RoundedImage
 import com.roque.ordenaproapp.ui.composables.SearchBar
+import com.roque.ordenaproapp.ui.screens.cart.CartViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun ProductScreen(
     productViewModel: ProductViewModel,
-    navigateToDetail: (String) -> Unit
+    cartViewModel: CartViewModel,
+    navigateToDetail: (String) -> Unit,
+    navigateToCart: () -> Unit
 ) {
 
     val state by productViewModel.uiState.collectAsState()
+    val cartItems by cartViewModel.cartItems.collectAsState()
 
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf<String?>(null) }
+    val totalQuantity = cartItems.sumOf { it.quantity }
+    val hasItems = totalQuantity > 0
+
+    var bumpTrigger by remember { mutableStateOf(0) }
+    val scale by animateFloatAsState(
+        targetValue = if (bumpTrigger > 0) 1.15f else 1f,
+        animationSpec = tween(durationMillis = 150),
+        label = "cart-fab-bump"
+    )
 
     LaunchedEffect(Unit) {
         productViewModel.loadProducts()
         productViewModel.loadCategories()
     }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp)
-    ) {
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_logo),
-                        contentDescription = "Logo",
-                        colorFilter = ColorFilter.tint(Color(0xFFFF3B30)),
-                        modifier = Modifier.padding(top = 16.dp)
-                    )
-                    Text(
-                        text = "Ordena tus productos favoritos!",
-                        fontWeight = FontWeight.SemiBold,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
-
-                RoundedImage(url = "https://t4.ftcdn.net/jpg/03/76/47/81/360_F_376478182_yPuPo2qi6rYcu9ilwGWR6gQ7QBBC8Isw.jpg")
-            }
+    LaunchedEffect(totalQuantity) {
+        if (hasItems) {
+            bumpTrigger++
+            delay(150)
+            bumpTrigger = 0
         }
+    }
 
-        if (state.isLoading) {
-            item {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(60.dp),
-                        strokeWidth = 6.dp,
-                        color = Color(0xFFFF3B30)
-                    )
-                }
-            }
-        } else if (state.error != null) {
-            item {
-                Box(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                    contentAlignment = Alignment.Center
+    Scaffold(
+        floatingActionButton = {
+            AnimatedVisibility(
+                visible = hasItems,
+                enter = fadeIn() + scaleIn(),
+                exit = fadeOut() + scaleOut()
+            ) {
+                FloatingActionButton(
+                    onClick = navigateToCart,
+                    modifier = Modifier.scale(scale),
+                    containerColor = Color(0xFFFF3B30),
+                    contentColor = Color.White
                 ) {
-                    Text(
-                        text = state.error!!,
-                        color = Color.Red,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-        } else {
-            item {
-                SearchBar(
-                    query = searchQuery,
-                    onQueryChange = {
-                        searchQuery = it
-                        productViewModel.searchProducts(searchQuery, selectedCategory)
-                    },
-                    onShoppingCartClick = {}
-                )
-            }
-
-            item {
-                Row(Modifier.horizontalScroll(rememberScrollState())) {
-
-                    state.categories.forEach { category ->
-                        CustomFilterChip(
-                            label = category.name.replaceFirstChar {
-                                if (it.isLowerCase()) it.titlecase() else it.toString()
-                            },
-                            selected = selectedCategory == category.name,
-                            onClick = {
-                                selectedCategory =
-                                    if (selectedCategory == category.name) null else category.name
-                                productViewModel.searchProducts(searchQuery, selectedCategory)
-                            }
+                    BadgedBox(badge = {
+                        Badge {
+                            Text(cartItems.sumOf { it.quantity }.toString())
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Ir al carrito"
                         )
                     }
                 }
             }
+        }
+    ) { padding ->
 
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp)
+        ) {
             item {
-                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_logo),
+                            contentDescription = "Logo",
+                            colorFilter = ColorFilter.tint(Color(0xFFFF3B30)),
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
+                        Text(
+                            text = "Ordena tus productos favoritos!",
+                            fontWeight = FontWeight.SemiBold,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+
+                    RoundedImage(url = "https://t4.ftcdn.net/jpg/03/76/47/81/360_F_376478182_yPuPo2qi6rYcu9ilwGWR6gQ7QBBC8Isw.jpg")
+                }
             }
 
-            gridItems(
-                data = state.products,
-                columns = 2,
-                horizontalSpacing = 8.dp,
-                verticalSpacing = 8.dp
-            ) { product ->
-                ProductCard(product = product) {
-                    navigateToDetail(product.id)
+            if (state.isLoading) {
+                item {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(60.dp),
+                            strokeWidth = 6.dp,
+                            color = Color(0xFFFF3B30)
+                        )
+                    }
+                }
+            } else if (state.error != null) {
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = state.error!!,
+                            color = Color.Red,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+            } else {
+                item {
+                    SearchBar(
+                        query = searchQuery,
+                        onQueryChange = {
+                            searchQuery = it
+                            productViewModel.searchProducts(searchQuery, selectedCategory)
+                        }
+                    )
+                }
+
+                item {
+                    Row(Modifier.horizontalScroll(rememberScrollState())) {
+
+                        state.categories.forEach { category ->
+                            CustomFilterChip(
+                                label = category.name.replaceFirstChar {
+                                    if (it.isLowerCase()) it.titlecase() else it.toString()
+                                },
+                                selected = selectedCategory == category.name,
+                                onClick = {
+                                    selectedCategory =
+                                        if (selectedCategory == category.name) null else category.name
+                                    productViewModel.searchProducts(searchQuery, selectedCategory)
+                                }
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                gridItems(
+                    data = state.products,
+                    columns = 2,
+                    horizontalSpacing = 8.dp,
+                    verticalSpacing = 8.dp
+                ) { product ->
+                    ProductCard(product = product) {
+                        navigateToDetail(product.id)
+                    }
                 }
             }
         }
     }
-
 }
 
 

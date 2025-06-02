@@ -1,10 +1,8 @@
 package com.roque.ordenaproapp.di
 
-import com.roque.data.datasource.remote.CategoryRemoteDataSourceImpl
-import com.roque.data.datasource.remote.ProductRemoteDataSourceImpl
+import com.roque.data.repository.CartRepositoryImpl
 import com.roque.data.repository.ProductRepositoryImpl
-import com.roque.domain.datasource.remote.CategoryRemoteDataSource
-import com.roque.domain.datasource.remote.ProductRemoteDataSource
+import com.roque.domain.repository.CartRepository
 import com.roque.domain.repository.ProductRepository
 import dagger.Binds
 import dagger.Module
@@ -22,9 +20,6 @@ abstract class InterfacesModule {
 
     @Singleton
     @Binds
-    abstract fun bindProductsRemoteDataSource(productRemoteDataSourceImpl: ProductRemoteDataSourceImpl): ProductRemoteDataSource
+    abstract fun bindCartRepository(cartRepositoryImpl: CartRepositoryImpl): CartRepository
 
-    @Singleton
-    @Binds
-    abstract fun bindCategoryRemoteDataSource(categoryRemoteDataSourceImpl: CategoryRemoteDataSourceImpl): CategoryRemoteDataSource
 }
