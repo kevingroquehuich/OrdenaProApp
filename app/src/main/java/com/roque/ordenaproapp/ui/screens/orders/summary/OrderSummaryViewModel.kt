@@ -59,6 +59,11 @@ class OrderSummaryViewModel @Inject constructor(
                     return@launch
                 }
 
+                if (customerName.isBlank()) {
+                    _uiState.value = OrderSummaryUiState.Error("El nombre del cliente no puede estar vacío")
+                    return@launch
+                }
+
                 val orderId = UUID.randomUUID().toString()
                 val date = System.currentTimeMillis()
 
