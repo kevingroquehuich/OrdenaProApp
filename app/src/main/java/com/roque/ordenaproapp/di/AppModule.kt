@@ -13,6 +13,8 @@ import com.roque.domain.usecase.product.GetCategoriesUseCase
 import com.roque.domain.usecase.product.GetProductByIdUseCase
 import com.roque.domain.usecase.product.GetProductsUseCase
 import com.roque.domain.usecase.product.SearchProductsUseCase
+import com.roque.ordenaproapp.utils.PdfActionsHelper
+import com.roque.ordenaproapp.utils.PdfActionsHelperImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,6 +24,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule  {
+
+    @Provides
+    @Singleton
+    fun providePdfActionsHelper(): PdfActionsHelper = PdfActionsHelperImpl()
 
     /** PRODUCTS **/
 

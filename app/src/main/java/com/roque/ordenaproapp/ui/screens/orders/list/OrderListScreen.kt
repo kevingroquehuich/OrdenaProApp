@@ -21,17 +21,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.roque.ordenaproapp.ui.composables.OrderItemCard
+import com.roque.ordenaproapp.utils.PdfActionsHelper
 import com.roque.ordenaproapp.utils.PdfInvoiceGenerator
 
 @Composable
 fun OrderListScreen(
     orderListViewModel: OrderListViewModel,
+    onBackClick: () -> Unit
 ) {
     val state by orderListViewModel.uiState.collectAsState()
 
@@ -66,7 +69,7 @@ fun OrderListScreen(
             Icon(
                 Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
-                modifier = Modifier.clickable {  }
+                modifier = Modifier.clickable { onBackClick() }
             )
 
             Spacer(Modifier.height(24.dp))
@@ -77,19 +80,18 @@ fun OrderListScreen(
 
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(state.orders) { order ->
+                    val pdfFile = remember(order) { orderListViewModel.generateInvoice(context, order) }
+
                     OrderItemCard(
                         order = order,
                         onGenerateInvoice = {
-                            val file = PdfInvoiceGenerator.generateInvoicePdf(context, it)
-                            PdfInvoiceGenerator.openPdf(context, file)
+                            orderListViewModel.openInvoice(context, pdfFile)
                         },
                         onInvoiceView = {
-                            val file = PdfInvoiceGenerator.generateInvoicePdf(context, it)
-                            PdfInvoiceGenerator.openPdf(context, file)
+                            orderListViewModel.openInvoice(context, pdfFile)
                         },
                         onInvoiceShare = {
-                            val file = PdfInvoiceGenerator.generateInvoicePdf(context, it)
-                            PdfInvoiceGenerator.sharePdf(context, file)
+                            orderListViewModel.shareInvoice(context, pdfFile)
                         }
                     )
                 }

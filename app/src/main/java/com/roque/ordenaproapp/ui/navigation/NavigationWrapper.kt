@@ -76,7 +76,10 @@ fun NavigationWrapper() {
 
         composable<OrderList> {
             val orderListViewModel: OrderListViewModel = hiltViewModel()
-            OrderListScreen(orderListViewModel = orderListViewModel)
+            OrderListScreen(
+                orderListViewModel = orderListViewModel,
+                onBackClick = { navController.popBackStack() }
+            )
         }
 
     }

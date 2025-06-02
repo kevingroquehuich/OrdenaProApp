@@ -110,25 +110,6 @@ object PdfInvoiceGenerator {
         return file
     }
 
-    fun openPdf(context: Context, file: File) {
-        val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, "application/pdf")
-            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-        context.startActivity(intent)
-    }
-
-    fun sharePdf(context: Context, file: File) {
-        val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "application/pdf"
-            putExtra(Intent.EXTRA_STREAM, uri)
-            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        }
-        context.startActivity(Intent.createChooser(intent, "Compartir factura"))
-    }
-
     private fun formatDate(timestamp: Long): String {
         val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
         return sdf.format(Date(timestamp))
